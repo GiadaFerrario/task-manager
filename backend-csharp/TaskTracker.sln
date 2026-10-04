@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "task-tracker", "task-tracker.csproj", "{FB616E90-9DF7-4938-A08F-F0A904AE4809}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BFB2A0AF-679B-46D0-9734-33A0E1CDFFD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Tests", "tests\TaskTracker.Tests\TaskTracker.Tests.csproj", "{BD7EA6E8-9CC6-48C1-A5C8-16E33327BD3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +17,12 @@ Global
 		{FB616E90-9DF7-4938-A08F-F0A904AE4809}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB616E90-9DF7-4938-A08F-F0A904AE4809}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB616E90-9DF7-4938-A08F-F0A904AE4809}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD7EA6E8-9CC6-48C1-A5C8-16E33327BD3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD7EA6E8-9CC6-48C1-A5C8-16E33327BD3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD7EA6E8-9CC6-48C1-A5C8-16E33327BD3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD7EA6E8-9CC6-48C1-A5C8-16E33327BD3E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BD7EA6E8-9CC6-48C1-A5C8-16E33327BD3E} = {BFB2A0AF-679B-46D0-9734-33A0E1CDFFD2}
 	EndGlobalSection
 EndGlobal

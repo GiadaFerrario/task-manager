@@ -47,3 +47,6 @@ app.MapCategoryEndpoints();
 app.MapEnumEndpoints();
 
 app.Run();
+
+// makes the entry point visible to the integration tests (WebApplicationFactory<Program>)
+public partial class Program;
