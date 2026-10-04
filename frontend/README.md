@@ -7,6 +7,8 @@ It allows users to:
 - 🗂️ Organize tasks by category
 - ⚡ Quickly change task status and priority
 
+Tasks and categories are created from the **Add Task** / **Add Category** buttons (a dialog form; priority and category are optional, categories get a color from a fixed palette). New tasks always start as *To do*.
+
 ---
 
 ### 🛠️ Tech Stack

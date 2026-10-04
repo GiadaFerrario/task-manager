@@ -1,5 +1,5 @@
-import {BrowserRouter, Routes, Route, useLocation} from "react-router-dom";
-import { CssBaseline, Container, ThemeProvider } from "@mui/material";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
+import { CssBaseline, Container, ThemeProvider, Toolbar } from "@mui/material";
 import { theme } from "./theme/theme";
 import Header from "./components/Header";
 import TasksPage from "./pages/TasksPage";
@@ -7,12 +7,10 @@ import CategoriesPage from "./pages/CategoriesPage.tsx";
 import HomePage from "./pages/HomePage.tsx";
 
 function Layout() {
-    const location = useLocation();
-    const hideNavbar = location.pathname === "/"; // hide nav bar in home
-
     return (
         <>
-            {!hideNavbar && <Header />}
+            <Header />
+            <Toolbar /> {/* spacer: the AppBar is fixed */}
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/tasks" element={<TasksPage />} />
