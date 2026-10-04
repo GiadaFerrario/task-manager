@@ -1,5 +1,9 @@
 # Task Manager
 
+[![Backend Java](https://github.com/GiadaFerrario/task-manager/actions/workflows/backend-java.yml/badge.svg)](https://github.com/GiadaFerrario/task-manager/actions/workflows/backend-java.yml)
+[![Backend C#](https://github.com/GiadaFerrario/task-manager/actions/workflows/backend-csharp.yml/badge.svg)](https://github.com/GiadaFerrario/task-manager/actions/workflows/backend-csharp.yml)
+[![Frontend](https://github.com/GiadaFerrario/task-manager/actions/workflows/frontend.yml/badge.svg)](https://github.com/GiadaFerrario/task-manager/actions/workflows/frontend.yml)
+
 Monorepo containing the frontend and backend implementations of the Task Manager application.
 
 ## Structure
@@ -107,6 +111,16 @@ cd backend-csharp && dotnet test TaskTracker.sln  # xUnit, WebApplicationFactory
 ```
 
 Both suites check the same contract (see above), which keeps the two backends interchangeable.
+
+## Continuous integration
+
+GitHub Actions (`.github/workflows/`) runs one workflow per project on every pull request and on pushes to `main`, only when files of that project change:
+
+| Workflow | Steps |
+|---|---|
+| `backend-java.yml` | JDK 17, `./mvnw verify` (build + all tests, with Testcontainers) |
+| `backend-csharp.yml` | .NET 8, restore, build (Release), `dotnet test` (with Testcontainers) |
+| `frontend.yml` | Node 22, `npm ci`, `npm run lint`, `npm run build` (type check + bundle) |
 
 ## Databases
 Both backends use PostgreSQL 16, each with its own database running in a separate Docker container.

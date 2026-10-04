@@ -1,0 +1,35 @@
+name: Backend C#
+
+on:
+  push:
+    branches: [main]
+    paths: ['backend-csharp/**', '.github/workflows/backend-csharp.yml']
+  pull_request:
+    paths: ['backend-csharp/**', '.github/workflows/backend-csharp.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend-csharp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore TaskTracker.sln
+      - name: Build
+        run: dotnet build TaskTracker.sln --no-restore --configuration Release
+      # Testcontainers starts PostgreSQL itself (Docker is available on ubuntu-latest)
+      - name: Test
+        run: dotnet test TaskTracker.sln --no-build --configuration Release
