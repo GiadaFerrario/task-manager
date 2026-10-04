@@ -41,8 +41,14 @@ public static class CategoryEndpoints
         {
             var category = await db.Categories.FindAsync(id);
             if (category is null) return Results.NotFound();
+
+            // like the Java backend: the tasks of a deleted category are kept, without category
+            await using var transaction = await db.Database.BeginTransactionAsync();
+            await db.Tasks.Where(t => t.CategoryId == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(t => t.CategoryId, (int?)null));
             db.Categories.Remove(category);
             await db.SaveChangesAsync();
+            await transaction.CommitAsync();
             return Results.NoContent();
         });
     }

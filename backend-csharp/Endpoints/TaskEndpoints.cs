@@ -24,7 +24,7 @@ public static class TaskEndpoints
         {
             if (string.IsNullOrWhiteSpace(dto.Title)) return ErrorResponse.BadRequest(http, "Title is mandatory - cannot be empty");
             if (dto.CategoryId is { } createCategoryId && !await db.Categories.AnyAsync(c => c.Id == createCategoryId))
-                return ErrorResponse.BadRequest(http, "Category not found");
+                return ErrorResponse.NotFound(http, "Category not found");
 
             var task = new TaskItem
             {
@@ -45,7 +45,7 @@ public static class TaskEndpoints
             var task = await db.Tasks.FindAsync(id);
             if (task is null) return Results.NotFound();
             if (dto.CategoryId is { } updateCategoryId && !await db.Categories.AnyAsync(c => c.Id == updateCategoryId))
-                return ErrorResponse.BadRequest(http, "Category not found");
+                return ErrorResponse.NotFound(http, "Category not found");
 
             task.Title = dto.Title;
             task.Description = dto.Description;
@@ -93,7 +93,7 @@ public static class TaskEndpoints
             if (task is null) return Results.NotFound();
 
             var categoryExists = await db.Categories.AnyAsync(c => c.Id == categoryId);
-            if (!categoryExists) return ErrorResponse.BadRequest(http, "Category not found");
+            if (!categoryExists) return ErrorResponse.NotFound(http, "Category not found");
 
             task.CategoryId = categoryId;
             await db.SaveChangesAsync();
