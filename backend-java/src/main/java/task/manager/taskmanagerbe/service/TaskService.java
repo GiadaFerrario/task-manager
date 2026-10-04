@@ -60,7 +60,7 @@ public class TaskService {
 
         task.setTitle(dto.title());
         task.setDescription(dto.description());
-        if (dto.priority() != null) task.setPriority(dto.priority());
+        task.setPriority(dto.priority()); // PUT replaces the task: a null priority clears it
         if (dto.status() != null) task.setStatus(dto.status());
         task.setCategory(getCategoryOrNull(dto.categoryId()));
 

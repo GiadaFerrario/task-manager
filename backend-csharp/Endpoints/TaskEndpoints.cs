@@ -44,6 +44,8 @@ public static class TaskEndpoints
             if (string.IsNullOrWhiteSpace(dto.Title)) return ErrorResponse.BadRequest(http, "Title is mandatory - cannot be empty");
             var task = await db.Tasks.FindAsync(id);
             if (task is null) return Results.NotFound();
+            if (dto.CategoryId is { } updateCategoryId && !await db.Categories.AnyAsync(c => c.Id == updateCategoryId))
+                return ErrorResponse.BadRequest(http, "Category not found");
 
             task.Title = dto.Title;
             task.Description = dto.Description;

@@ -104,6 +104,20 @@ public class TaskServiceTest {
     }
 
     @Test
+    public void update_nullPriorityAndCategory_clearsThem() {
+        TaskDTO updateDTO = new TaskDTO(1L, "Task", "Desc", null, Status.DONE, null, null, null);
+        given(taskRepository.findById(1L)).willReturn(Optional.of(task));
+        given(taskRepository.save(any(Task.class))).willAnswer(inv -> inv.getArgument(0));
+
+        TaskDTO result = taskService.update(1L, updateDTO);
+
+        assertThat(result.priority()).isNull();
+        assertThat(result.categoryId()).isNull();
+        assertThat(result.categoryColor()).isNull();
+        assertThat(result.status()).isEqualTo(Status.DONE);
+    }
+
+    @Test
     public void update_notFound_exception() {
         given(taskRepository.findById(99L)).willReturn(Optional.empty());
         TaskDTO dto = new TaskDTO(99L, "Test", "Description", Priority.LOW, Status.TODO, category.getCategoryId(), category.getName(), category.getColor());
