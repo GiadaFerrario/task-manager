@@ -1,0 +1,38 @@
+services:
+  postgres-java:
+    image: postgres:16-alpine
+    container_name: taskmanager-postgres-java
+    environment:
+      POSTGRES_DB: taskmanager_java
+      POSTGRES_USER: ${POSTGRES_USER:?Copy .env.example to .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copy .env.example to .env}
+    ports:
+      - "${POSTGRES_JAVA_PORT:-5432}:5432"
+    volumes:
+      - pgdata_java:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d taskmanager_java"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  postgres-csharp:
+    image: postgres:16-alpine
+    container_name: taskmanager-postgres-csharp
+    environment:
+      POSTGRES_DB: taskmanager_csharp
+      POSTGRES_USER: ${POSTGRES_USER:?Copy .env.example to .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copy .env.example to .env}
+    ports:
+      - "${POSTGRES_CSHARP_PORT:-5433}:5432"
+    volumes:
+      - pgdata_csharp:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d taskmanager_csharp"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata_java:
+  pgdata_csharp:

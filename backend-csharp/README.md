@@ -8,7 +8,34 @@ It includes:
 - ⚙️ Enum handling for task status and priority (serialized as strings)
 - 🔗 Task ↔ Category relationship via EF Core
 
-Currently, it uses **SQLite** for simplicity of development, but it can be swapped for **PostgreSQL** in a future version.
+Data is stored in **PostgreSQL** via Npgsql; the schema is managed with **EF Core migrations** (`Migrations/`), applied automatically on startup in Development.
+
+#### Run
+
+```bash
+docker compose up -d --wait postgres-csharp   # from the repo root
+dotnet run --project task-tracker.csproj
+```
+
+The connection string contains credentials, so it is **not** in `appsettings.json`. Store it once with .NET user secrets (kept outside the repo):
+
+```bash
+dotnet user-secrets set "ConnectionStrings:Default" \
+  "Host=localhost;Port=5433;Database=taskmanager_csharp;Username=<POSTGRES_USER>;Password=<POSTGRES_PASSWORD>" \
+  --project task-tracker.csproj
+```
+
+or set the `ConnectionStrings__Default` environment variable (e.g. in production). The app fails at startup if it is missing. CORS origins are configured in `appsettings.json` (`Cors:AllowedOrigins`).
+
+Enums are serialized as `UPPER_SNAKE_CASE` (`TODO`, `IN_PROGRESS`, `DONE`) to match the Java backend and the frontend.
+
+#### Change the model
+
+```bash
+dotnet tool install -g dotnet-ef
+dotnet ef migrations add <Name>
+dotnet ef database update
+```
 
 Built as a C# rewrite of an existing Java/Spring Boot backend, mirroring its API contract for frontend compatibility.
 
@@ -17,7 +44,7 @@ Built as a C# rewrite of an existing Java/Spring Boot backend, mirroring its API
 ### 🛠️ Tech Stack
 - **Language:** C# 12
 - **Framework:** ASP.NET Core 8 (Minimal APIs)
-- **Database:** SQLite → PostgreSQL (coming soon)
+- **Database:** PostgreSQL (Npgsql), EF Core migrations
 - **Build Tool:** .NET CLI / Rider
 - **ORM:** Entity Framework Core
 - **Other:** DTOs for API contracts, endpoint groups organized by feature
