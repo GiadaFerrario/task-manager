@@ -4,7 +4,75 @@
 [![Backend C#](https://github.com/GiadaFerrario/task-manager/actions/workflows/backend-csharp.yml/badge.svg)](https://github.com/GiadaFerrario/task-manager/actions/workflows/backend-csharp.yml)
 [![Frontend](https://github.com/GiadaFerrario/task-manager/actions/workflows/frontend.yml/badge.svg)](https://github.com/GiadaFerrario/task-manager/actions/workflows/frontend.yml)
 
-Monorepo containing the frontend and backend implementations of the Task Manager application.
+A full-stack task manager: a React single-page app talking to a REST API that is implemented **twice**, in Java (Spring Boot) and in C# (ASP.NET Core), on top of PostgreSQL. This monorepo contains the frontend and both backends.
+
+## What the app does
+
+- Create **categories** with a name, a description and a color picked from a palette.
+- Create **tasks** with a title, a description, an optional priority (low / medium / high) and an optional category. New tasks start as *To do*.
+- Open a task to change its description, status (*To do* / *In progress* / *Done*), priority and category.
+- See the totals of tasks and categories on the home page, with shortcuts to create new ones.
+
+The backends also support updating and deleting categories, deleting tasks and changing a single field of a task (see the [API contract](#api-contract)); the UI does not use these yet.
+
+## Tech stack
+
+| Layer | Technologies |
+|---|---|
+| Frontend | React 19, TypeScript, Vite, Material UI, React Router, Axios, Storybook |
+| Backend (Java) | Java 17, Spring Boot 3 (Web, Data JPA, Security, Validation), Flyway, Lombok, Maven |
+| Backend (C#) | C# 12, ASP.NET Core 8 (minimal APIs), Entity Framework Core, Npgsql, EF Core migrations |
+| Database | PostgreSQL 16 (one database per backend), Docker Compose |
+| Testing | JUnit 5, Mockito, MockMvc (Java); xUnit, `WebApplicationFactory` (C#); Testcontainers for both |
+| CI | GitHub Actions |
+
+## Architecture
+
+```mermaid
+flowchart LR
+    FE["Frontend<br/>React + TypeScript<br/>(Vite, :5173)"]
+    JAVA["Java backend<br/>Spring Boot (:8080)"]
+    CS["C# backend<br/>ASP.NET Core (:5213)"]
+    DBJ[("PostgreSQL<br/>taskmanager_java<br/>:5432")]
+    DBC[("PostgreSQL<br/>taskmanager_csharp<br/>:5433")]
+
+    FE -- "REST / JSON<br/>(VITE_API_URL)" --> JAVA
+    FE -. "same API contract" .-> CS
+    JAVA --> DBJ
+    CS --> DBC
+```
+
+The frontend talks to **one** backend at a time: the base URL is the `VITE_API_URL` environment variable (the Java backend by default). Both backends implement the same [API contract](#api-contract) and each one owns its own database, so they never interfere with each other.
+
+**Frontend** (`frontend/src`): `pages/` (one component per route), `components/` (cards, forms and dialogs, chips, lists, all documented in Storybook), `api/` (Axios services and error handling), `models/` (TypeScript types and enum labels). State is local to the pages (React hooks), without a global store, which is enough for this scope.
+
+**Java backend** follows the usual layered Spring architecture:
+
+```text
+controller  ->  service  ->  repository (Spring Data JPA)  ->  PostgreSQL
+   DTO records       business rules        entities (Flyway owns the schema)
+```
+
+A `GlobalExceptionHandler` turns exceptions into a uniform JSON error and `SecurityConfig` defines the (public) security rules and CORS.
+
+**C# backend** is deliberately lighter: endpoint groups (`Endpoints/`) use the EF Core `AppDbContext` directly, with DTO records in `Dtos/` and EF Core migrations in `Migrations/`. There is no service or repository layer because the logic is small and EF Core's `DbContext` already acts as a unit of work.
+
+## Why two backends
+
+Java is the stack I know best, so I built the Java backend first. I then rewrote the same API in **C# and ASP.NET Core** to learn something new and step out of my comfort zone: starting from a project I already understood let me focus on the platform instead of the domain.
+
+Keeping the API contract identical turned out to be a good constraint. The frontend only depends on the contract, not on the framework behind it, so both backends can be tested against the same expectations and compared side by side:
+
+| | Java / Spring Boot | C# / ASP.NET Core |
+|---|---|---|
+| Structure | Layers: controller, service, repository | Minimal API endpoints on `DbContext` |
+| Schema | SQL migrations with Flyway (SQL is the source of truth) | Code-first EF Core migrations (the model is the source of truth) |
+| Validation | Bean Validation (`@Valid`) plus service checks | Explicit checks in the endpoints |
+| Enums | `@Enumerated(STRING)` | `HasConversion<string>()` plus a JSON converter for `UPPER_SNAKE_CASE` |
+| Configuration | `application.properties` and environment variables | `appsettings.json`, user secrets and environment variables |
+| Integration tests | `@SpringBootTest` + MockMvc | `WebApplicationFactory` + `HttpClient` |
+
+Writing the C# integration tests against the same contract also exposed real differences between the two implementations (for example how an invalid enum value or the deletion of a category with tasks was handled), which I fixed so the backends are now interchangeable: the frontend works unchanged with either one.
 
 ## Structure
 
