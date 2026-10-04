@@ -116,7 +116,8 @@ public class TaskService {
                 task.getPriority(),
                 task.getStatus(),
                 task.getCategory() != null ? task.getCategory().getCategoryId() : null,
-                task.getCategory() != null ? task.getCategory().getName() : null
+                task.getCategory() != null ? task.getCategory().getName() : null,
+                task.getCategory() != null ? task.getCategory().getColor() : null
         );
     }
 

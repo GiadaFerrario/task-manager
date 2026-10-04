@@ -12,5 +12,6 @@ public record TaskDTO(Long id,
                       Priority priority,
                       Status status,
                       Long categoryId,
-                      String categoryName) {
+                      String categoryName,
+                      String categoryColor) {
 }

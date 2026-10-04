@@ -14,22 +14,24 @@ public static class CategoryEndpoints
         group.MapGet("/", async (AppDbContext db) =>
             await db.Categories.Select(c => ToDto(c)).ToListAsync());
 
-        group.MapPost("/", async (UpsertCategoryDto dto, AppDbContext db) =>
+        group.MapPost("/", async (UpsertCategoryDto dto, AppDbContext db, HttpContext http) =>
         {
-            var category = new Category { Name = dto.Name, Description = dto.Description, Color = dto.Color };
+            if (string.IsNullOrWhiteSpace(dto.Name)) return ErrorResponse.BadRequest(http, "Category name is mandatory - cannot be empty");
+            var category = new Category { Name = dto.Name, Description = dto.Description, Color = ColorOrDefault(dto.Color) };
             db.Categories.Add(category);
             await db.SaveChangesAsync();
             return Results.Created($"/api/categories/{category.Id}", ToDto(category));
         });
 
-        group.MapPut("/{id:int}", async (int id, UpsertCategoryDto dto, AppDbContext db) =>
+        group.MapPut("/{id:int}", async (int id, UpsertCategoryDto dto, AppDbContext db, HttpContext http) =>
         {
+            if (string.IsNullOrWhiteSpace(dto.Name)) return ErrorResponse.BadRequest(http, "Category name is mandatory - cannot be empty");
             var category = await db.Categories.FindAsync(id);
             if (category is null) return Results.NotFound();
 
             category.Name = dto.Name;
             category.Description = dto.Description;
-            category.Color = dto.Color;
+            category.Color = ColorOrDefault(dto.Color);
 
             await db.SaveChangesAsync();
             return Results.Ok(ToDto(category));
@@ -44,6 +46,10 @@ public static class CategoryEndpoints
             return Results.NoContent();
         });
     }
+
+    private const string DefaultColor = "#9e9e9e";
+
+    private static string ColorOrDefault(string? color) => string.IsNullOrWhiteSpace(color) ? DefaultColor : color;
 
     private static CategoryDto ToDto(Category c) => new(c.Id, c.Name, c.Description, c.Color);
 }

@@ -9,7 +9,8 @@ public record TaskDto(
     Priority? Priority,
     Status Status,
     int? CategoryId,
-    string? CategoryName);
+    string? CategoryName,
+    string? CategoryColor);
 
 public record CreateTaskDto(string Title, string? Description, Priority? Priority, int? CategoryId);
 

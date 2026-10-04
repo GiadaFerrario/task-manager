@@ -57,6 +57,7 @@ public class TaskServiceTest {
         assertThat(dtos).isNotEmpty();
         assertThat(dtos.get(0).title()).isEqualTo("Task");
         assertThat(dtos.get(0).categoryName()).isEqualTo("Category");
+        assertThat(dtos.get(0).categoryColor()).isEqualTo("#FFFFFF");
         then(taskRepository).should(times(1)).findAll();
     }
 
@@ -78,7 +79,8 @@ public class TaskServiceTest {
                 Priority.HIGH,
                 Status.TODO,
                 category.getCategoryId(),
-                category.getName()
+                category.getName(),
+                category.getColor()
         );
 
         assertThatThrownBy(() -> taskService.create(dto))
@@ -88,7 +90,7 @@ public class TaskServiceTest {
 
     @Test
     public void update_ok() {
-        TaskDTO updateDTO = new TaskDTO(1L, "New Title", "New Desc", Priority.HIGH, Status.IN_PROGRESS, category.getCategoryId(), category.getName());
+        TaskDTO updateDTO = new TaskDTO(1L, "New Title", "New Desc", Priority.HIGH, Status.IN_PROGRESS, category.getCategoryId(), category.getName(), category.getColor());
         given(taskRepository.findById(1L)).willReturn(Optional.of(task));
         given(categoryRepository.findById(1L)).willReturn(Optional.of(category));
         given(taskRepository.save(any(Task.class))).willAnswer(inv -> inv.getArgument(0));
@@ -104,7 +106,7 @@ public class TaskServiceTest {
     @Test
     public void update_notFound_exception() {
         given(taskRepository.findById(99L)).willReturn(Optional.empty());
-        TaskDTO dto = new TaskDTO(99L, "Test", "Description", Priority.LOW, Status.TODO, category.getCategoryId(), category.getName());
+        TaskDTO dto = new TaskDTO(99L, "Test", "Description", Priority.LOW, Status.TODO, category.getCategoryId(), category.getName(), category.getColor());
 
         assertThatThrownBy(() -> taskService.update(99L, dto))
                 .isInstanceOf(ResourceNotFoundException.class)
