@@ -15,7 +15,20 @@ It allows users to:
 - **UI Library:** Material UI
 - **State Management:** React Hooks / Context API
 - **HTTP Client:** Axios
-- **Backend Integration:** Spring Boot REST API
+- **Backend Integration:** REST API (Spring Boot or ASP.NET Core)
+
+---
+
+### ▶️ Run
+
+```bash
+npm install
+npm run dev        # http://localhost:5173
+```
+
+The API base URL is read from `VITE_API_URL` and defaults to the Java backend (`http://localhost:8080/api`).
+To use the C# backend, copy `.env.example` to `.env.local` and set `VITE_API_URL=http://localhost:5213/api`.
+Both backends must be started first (see the [root README](../README.md)).
 
 ---
 
