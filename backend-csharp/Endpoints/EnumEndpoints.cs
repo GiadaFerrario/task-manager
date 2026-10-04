@@ -8,9 +8,9 @@ public static class EnumEndpoints
     public static void MapEnumEndpoints(this WebApplication app)
     {
         app.MapGet("/api/priorities", () =>
-            Enum.GetValues<Priority>().Select(p => new EnumDto(p.ToString(), p.Label())));
+            Enum.GetValues<Priority>().Select(p => new EnumDto(WireEnum.ToWire(p), p.Label())));
 
         app.MapGet("/api/statuses", () =>
-            Enum.GetValues<Status>().Select(s => new EnumDto(s.ToString(), s.Label())));
+            Enum.GetValues<Status>().Select(s => new EnumDto(WireEnum.ToWire(s), s.Label())));
     }
 }

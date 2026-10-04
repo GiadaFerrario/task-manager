@@ -60,20 +60,22 @@ public static class TaskEndpoints
             return Results.NoContent();
         });
 
-        group.MapPatch("/{id:int}/status", async (int id, Status status, AppDbContext db) =>
+        group.MapPatch("/{id:int}/status", async (int id, string status, AppDbContext db) =>
         {
+            if (!WireEnum.TryParse<Status>(status, out var newStatus)) return Results.BadRequest("Invalid status");
             var task = await db.Tasks.Include(t => t.Category).FirstOrDefaultAsync(t => t.Id == id);
             if (task is null) return Results.NotFound();
-            task.Status = status;
+            task.Status = newStatus;
             await db.SaveChangesAsync();
             return Results.Ok(ToDto(task));
         });
 
-        group.MapPatch("/{id:int}/priority", async (int id, Priority priority, AppDbContext db) =>
+        group.MapPatch("/{id:int}/priority", async (int id, string priority, AppDbContext db) =>
         {
+            if (!WireEnum.TryParse<Priority>(priority, out var newPriority)) return Results.BadRequest("Invalid priority");
             var task = await db.Tasks.Include(t => t.Category).FirstOrDefaultAsync(t => t.Id == id);
             if (task is null) return Results.NotFound();
-            task.Priority = priority;
+            task.Priority = newPriority;
             await db.SaveChangesAsync();
             return Results.Ok(ToDto(task));
         });

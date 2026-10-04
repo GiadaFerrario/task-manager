@@ -1,3 +1,3 @@
 namespace task_tracker.Dtos;
 
-public record EnumDto(string Value, string Label);
+public record EnumDto(string Name, string Label);
