@@ -2,13 +2,15 @@ import type {Task} from "../../models/Task.ts";
 import {Card, CardContent, Typography} from "@mui/material";
 import ChipList from "../chips/ChipList.tsx";
 
-export default function TaskCard(props: {task: Task}) {
+export default function TaskCard(props: {task: Task, onClick?: () => void}) {
 
     return (
         <Card
             variant="outlined"
+            onClick={props.onClick}
             sx={{
                 borderRadius: 2,
+                cursor: props.onClick ? "pointer" : "default",
                 transition: "0.2s ease-in-out",
                 "&:hover": {
                     boxShadow: 2,

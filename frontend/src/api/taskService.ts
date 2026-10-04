@@ -6,6 +6,11 @@ export const getTasks = async (): Promise<Task[]> => {
     return res.data;
 };
 
+export const updateTask = async (id: number, task: Partial<Task>): Promise<Task> => {
+    const res = await axiosClient.put<Task>(`/tasks/${id}`, task);
+    return res.data;
+};
+
 export const createTask = async (task: Partial<Task>): Promise<Task> => {
     const res = await axiosClient.post<Task>("/tasks", task);
     return res.data;

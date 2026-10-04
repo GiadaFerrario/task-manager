@@ -58,7 +58,7 @@ export default function HomePage() {
                 Task Manager
             </Typography>
             <Typography variant="subtitle1" color="text.secondary" sx={{mb: 4}}>
-                Organize your work with tasks and categories.
+                Organize your day with tasks and categories.
             </Typography>
             <Stack direction={{xs: "column", sm: "row"}} spacing={3}>
                 <SummaryCard title="Tasks" icon={TaskAltIcon} count={taskCount} singular="task" plural="tasks" to="/tasks" addLabel="+ New task"/>

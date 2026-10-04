@@ -9,12 +9,14 @@ import {getErrorMessage} from "../api/getErrorMessage.ts";
 import TaskCard from "../components/cards/TaskCard.tsx";
 import CustomList from "../components/list/CustomList.tsx";
 import TaskFormDialog from "../components/forms/TaskFormDialog.tsx";
+import TaskDetailDialog from "../components/forms/TaskDetailDialog.tsx";
 
 export default function TasksPage() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
     const dialogOpen = searchParams.get("new") === "1";
 
@@ -36,6 +38,11 @@ export default function TasksPage() {
         closeDialog();
     };
 
+    const handleUpdated = (updated: Task) => {
+        setTasks((current) => current.map((t) => (t.id === updated.id ? updated : t)));
+        setSelectedTask(null);
+    };
+
     return (
         <>
             <Box display="flex" alignItems="center" justifyContent="space-between" mb={3} sx={{width: "33vw"}}>
@@ -45,8 +52,17 @@ export default function TasksPage() {
             {error && <Alert severity="error" sx={{mb: 2}}>{error}</Alert>}
             {loading
                 ? <CircularProgress/>
-                : <CustomList items={tasks} renderItem={(task) => <TaskCard task={task}/>}/>}
+                : <CustomList items={tasks} renderItem={(task) => <TaskCard task={task} onClick={() => setSelectedTask(task)}/>}/>}
             <TaskFormDialog open={dialogOpen} categories={categories} onClose={closeDialog} onSaved={handleSaved}/>
+            {selectedTask && (
+                <TaskDetailDialog
+                    key={selectedTask.id}
+                    task={selectedTask}
+                    categories={categories}
+                    onClose={() => setSelectedTask(null)}
+                    onSaved={handleUpdated}
+                />
+            )}
         </>
     );
 }

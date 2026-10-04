@@ -4,8 +4,8 @@ import {Status} from "./Status.ts";
 export interface Task {
     id: number,
     title: string,
-    description?: string;
-    priority: Priority;
+    description?: string | null;
+    priority?: Priority | null;
     status: Status;
     categoryId?: number | null;
     categoryName?: string | null;

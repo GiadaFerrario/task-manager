@@ -5,3 +5,10 @@ export const Priority = {
 } as const;
 
 export type Priority = (typeof Priority)[keyof typeof Priority];
+
+
+export const PRIORITY_LABELS: Record<Priority, string> = {
+    [Priority.LOW]: "Low",
+    [Priority.MEDIUM]: "Medium",
+    [Priority.HIGH]: "High",
+};
