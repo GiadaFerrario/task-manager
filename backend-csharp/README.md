@@ -4,9 +4,10 @@ A backend project developed with **ASP.NET Core** that exposes a REST API for ma
 
 It includes:
 - ✅ CRUD functionality
-- 🧠 Validation via model binding and Data Annotations
+- 🧠 Input validation in the endpoints: `400` for blank titles/names and invalid enum values, `404` for unknown resources, same JSON error body as the Java backend
 - ⚙️ Enum handling for task status and priority (serialized as strings)
 - 🔗 Task ↔ Category relationship via EF Core
+- 🧪 Integration tests with **xUnit**, `WebApplicationFactory` and **Testcontainers**
 
 Data is stored in **PostgreSQL** via Npgsql; the schema is managed with **EF Core migrations** (`Migrations/`), applied automatically on startup in Development.
 
@@ -29,6 +30,21 @@ or set the `ConnectionStrings__Default` environment variable (e.g. in production
 
 Enums are serialized as `UPPER_SNAKE_CASE` (`TODO`, `IN_PROGRESS`, `DONE`) to match the Java backend and the frontend.
 
+#### Test
+
+```bash
+dotnet test TaskTracker.sln
+```
+
+Docker must be running: `tests/TaskTracker.Tests` starts the real application (`ApiFactory`) on a throwaway PostgreSQL via **Testcontainers**, applies the EF Core migrations and empties the tables before every test.
+
+| Tests | What they cover |
+|---|---|
+| `TaskApiTests`, `CategoryApiTests` | Create/read/update/delete, PATCH endpoints, validation (`400`), unknown resources (`404`), category deletion keeping its tasks |
+| `EnumApiTests`, `WireEnumTests` | Enums exposed and parsed as `UPPER_SNAKE_CASE` |
+
+The test project lives in `tests/` and is excluded from the web project (`task-tracker.csproj`).
+
 #### Change the model
 
 ```bash
@@ -47,6 +63,7 @@ Built as a C# rewrite of an existing Java/Spring Boot backend, mirroring its API
 - **Database:** PostgreSQL (Npgsql), EF Core migrations
 - **Build Tool:** .NET CLI / Rider
 - **ORM:** Entity Framework Core
+- **Testing:** xUnit, Microsoft.AspNetCore.Mvc.Testing, Testcontainers
 - **Other:** DTOs for API contracts, endpoint groups organized by feature
 
 ---

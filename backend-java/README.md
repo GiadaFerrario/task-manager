@@ -5,8 +5,8 @@ A backend project developed with **Spring Boot** that exposes a REST API for man
 It includes:
 - ✅ CRUD functionality
 - 🧠 Validation with `@Valid`
-- ⚙️ Custom exception handling
-- 🧪 Unit testing with **JUnit 5** and **Mockito**
+- ⚙️ Centralized exception handling (`GlobalExceptionHandler`): `404` for unknown resources, `400` for invalid input and invalid enum values, one JSON error body
+- 🧪 Unit, web-layer and integration tests (**JUnit 5**, **Mockito**, **MockMvc**, **Testcontainers**)
 
 Data is stored in **PostgreSQL**; the schema is versioned with **Flyway** (`src/main/resources/db/migration`) and Hibernate only validates it (`ddl-auto=validate`).
 
@@ -28,16 +28,22 @@ The API is public (no user accounts yet): `SecurityConfig` permits all requests,
 ./mvnw test
 ```
 
-`TaskManagerBeApplicationTests` uses **Testcontainers** to start a throwaway PostgreSQL container, so Docker must be running.
+Docker must be running: the integration tests use **Testcontainers** to start a throwaway PostgreSQL (one container shared by the whole run, see `AbstractIntegrationTest`).
+
+| Level | Tests | What they cover |
+|---|---|---|
+| Unit | `TaskServiceTest`, `CategoryServiceTest`, `EnumServiceTest` | Business rules with mocked repositories |
+| Web layer | `TaskControllerTest`, `CategoryControllerTest`, `SecurityConfigTest` | Status codes, validation, error body, CORS/CSRF (no database) |
+| Integration | `TaskApiIntegrationTest`, `TaskManagerBeApplicationTests` | Full flows on PostgreSQL with the real Flyway schema; each test is rolled back |
 
 ---
 
 ### 🛠️ Tech Stack
-- **Language:** Java 21
+- **Language:** Java 17
 - **Framework:** Spring Boot 3
 - **Database:** PostgreSQL, Flyway migrations
 - **Build Tool:** Maven
-- **Testing:** JUnit 5, Mockito, Testcontainers
+- **Testing:** JUnit 5, Mockito, MockMvc, Testcontainers
 - **Other:** Spring Data JPA, Lombok, Jakarta Validation
 
 ---
