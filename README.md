@@ -14,6 +14,22 @@ A full-stack task manager: a React single-page app talking to a REST API that is
 - Change the status or the priority of a task straight from its card by clicking the chip.
 - See the totals of tasks and categories on the home page, with shortcuts to create new ones.
 
+## Screenshots
+
+The interface follows the system color scheme and has a toggle in the header for the light and dark themes.
+
+![Home page](docs/screenshots/home-light.png)
+
+| Tasks, light | Tasks, dark |
+|---|---|
+| ![Tasks, light theme](docs/screenshots/tasks-light.png) | ![Tasks, dark theme](docs/screenshots/tasks-dark.png) |
+
+| Task details | Categories |
+|---|---|
+| ![Task details dialog](docs/screenshots/task-dialog-light.png) | ![Categories](docs/screenshots/categories-light.png) |
+
+<img src="docs/screenshots/tasks-mobile.png" alt="Tasks on a phone" width="390">
+
 ## Tech stack
 
 | Layer | Technologies |
