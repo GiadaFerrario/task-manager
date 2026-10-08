@@ -27,7 +27,7 @@ public static class CategoryEndpoints
         {
             if (string.IsNullOrWhiteSpace(dto.Name)) return ErrorResponse.BadRequest(http, "Category name is mandatory - cannot be empty");
             var category = await db.Categories.FindAsync(id);
-            if (category is null) return Results.NotFound();
+            if (category is null) return ErrorResponse.NotFound(http, $"Category not found - id: {id}");
 
             category.Name = dto.Name;
             category.Description = dto.Description;
@@ -37,10 +37,10 @@ public static class CategoryEndpoints
             return Results.Ok(ToDto(category));
         });
 
-        group.MapDelete("/{id:int}", async (int id, AppDbContext db) =>
+        group.MapDelete("/{id:int}", async (int id, AppDbContext db, HttpContext http) =>
         {
             var category = await db.Categories.FindAsync(id);
-            if (category is null) return Results.NotFound();
+            if (category is null) return ErrorResponse.NotFound(http, $"Category not found - id: {id}");
 
             // like the Java backend: the tasks of a deleted category are kept, without category
             await using var transaction = await db.Database.BeginTransactionAsync();

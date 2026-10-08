@@ -14,10 +14,10 @@ public static class TaskEndpoints
         group.MapGet("/", async (AppDbContext db) =>
             await db.Tasks.Include(t => t.Category).Select(t => ToDto(t)).ToListAsync());
 
-        group.MapGet("/{id:int}", async (int id, AppDbContext db) =>
+        group.MapGet("/{id:int}", async (int id, AppDbContext db, HttpContext http) =>
         {
             var task = await db.Tasks.Include(t => t.Category).FirstOrDefaultAsync(t => t.Id == id);
-            return task is null ? Results.NotFound() : Results.Ok(ToDto(task));
+            return task is null ? TaskNotFound(http, id) : Results.Ok(ToDto(task));
         });
 
         group.MapPost("/", async (CreateTaskDto dto, AppDbContext db, HttpContext http) =>
@@ -43,7 +43,7 @@ public static class TaskEndpoints
         {
             if (string.IsNullOrWhiteSpace(dto.Title)) return ErrorResponse.BadRequest(http, "Title is mandatory - cannot be empty");
             var task = await db.Tasks.FindAsync(id);
-            if (task is null) return Results.NotFound();
+            if (task is null) return TaskNotFound(http, id);
             if (dto.CategoryId is { } updateCategoryId && !await db.Categories.AnyAsync(c => c.Id == updateCategoryId))
                 return ErrorResponse.NotFound(http, "Category not found");
 
@@ -58,10 +58,10 @@ public static class TaskEndpoints
             return Results.Ok(ToDto(task));
         });
 
-        group.MapDelete("/{id:int}", async (int id, AppDbContext db) =>
+        group.MapDelete("/{id:int}", async (int id, AppDbContext db, HttpContext http) =>
         {
             var task = await db.Tasks.FindAsync(id);
-            if (task is null) return Results.NotFound();
+            if (task is null) return TaskNotFound(http, id);
             db.Tasks.Remove(task);
             await db.SaveChangesAsync();
             return Results.NoContent();
@@ -71,7 +71,7 @@ public static class TaskEndpoints
         {
             if (!WireEnum.TryParse<Status>(status, out var newStatus)) return ErrorResponse.BadRequest(http, "Invalid status");
             var task = await db.Tasks.Include(t => t.Category).FirstOrDefaultAsync(t => t.Id == id);
-            if (task is null) return Results.NotFound();
+            if (task is null) return TaskNotFound(http, id);
             task.Status = newStatus;
             await db.SaveChangesAsync();
             return Results.Ok(ToDto(task));
@@ -81,7 +81,7 @@ public static class TaskEndpoints
         {
             if (!WireEnum.TryParse<Priority>(priority, out var newPriority)) return ErrorResponse.BadRequest(http, "Invalid priority");
             var task = await db.Tasks.Include(t => t.Category).FirstOrDefaultAsync(t => t.Id == id);
-            if (task is null) return Results.NotFound();
+            if (task is null) return TaskNotFound(http, id);
             task.Priority = newPriority;
             await db.SaveChangesAsync();
             return Results.Ok(ToDto(task));
@@ -90,7 +90,7 @@ public static class TaskEndpoints
         group.MapPatch("/{id:int}/category", async (int id, int categoryId, AppDbContext db, HttpContext http) =>
         {
             var task = await db.Tasks.FirstOrDefaultAsync(t => t.Id == id);
-            if (task is null) return Results.NotFound();
+            if (task is null) return TaskNotFound(http, id);
 
             var categoryExists = await db.Categories.AnyAsync(c => c.Id == categoryId);
             if (!categoryExists) return ErrorResponse.NotFound(http, "Category not found");
@@ -101,6 +101,9 @@ public static class TaskEndpoints
             return Results.Ok(ToDto(task));
         });
     }
+
+    private static IResult TaskNotFound(HttpContext http, int id) =>
+        ErrorResponse.NotFound(http, $"Task not found with id: {id}");
 
     private static TaskDto ToDto(TaskItem t) =>
         new(t.Id, t.Title, t.Description, t.Priority, t.Status, t.CategoryId, t.Category?.Name, t.Category?.Color);
