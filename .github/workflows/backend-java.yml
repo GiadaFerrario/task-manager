@@ -3,9 +3,9 @@ name: Backend Java
 on:
   push:
     branches: [main]
-    paths: ['backend-java/**', '.github/workflows/backend-java.yml']
+    paths: ['backend-java/**', 'api/**', '.github/workflows/backend-java.yml']
   pull_request:
-    paths: ['backend-java/**', '.github/workflows/backend-java.yml']
+    paths: ['backend-java/**', 'api/**', '.github/workflows/backend-java.yml']
 
 permissions:
   contents: read

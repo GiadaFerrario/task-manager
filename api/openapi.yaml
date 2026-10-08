@@ -1,0 +1,330 @@
+openapi: 3.1.0
+info:
+  title: Task Manager API
+  version: 1.0.0
+  description: |
+    The API contract shared by the Java (Spring Boot) and the C# (ASP.NET Core) backends.
+    Both backends are tested against this file (see `OpenApiContractTest` and `OpenApiContractTests`).
+
+    Conventions:
+    - enums are UPPER_SNAKE_CASE strings;
+    - every error has the `Error` body;
+    - `PUT` replaces the resource: an omitted optional field is cleared.
+servers:
+  - url: http://localhost:8080/api
+    description: Java backend
+  - url: http://localhost:5213/api
+    description: C# backend
+
+tags:
+  - name: Tasks
+  - name: Categories
+  - name: Enums
+
+paths:
+  /tasks:
+    get:
+      tags: [Tasks]
+      summary: List the tasks
+      responses:
+        '200':
+          description: All the tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Task' }
+    post:
+      tags: [Tasks]
+      summary: Create a task (it starts as TODO)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskCreate' }
+      responses:
+        '201':
+          description: The created task
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /tasks/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Tasks]
+      summary: Get a task
+      responses:
+        '200':
+          description: The task
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Tasks]
+      summary: Replace a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskUpdate' }
+      responses:
+        '200':
+          description: The updated task
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Tasks]
+      summary: Delete a task
+      responses:
+        '204': { description: Deleted }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /tasks/{id}/status:
+    patch:
+      tags: [Tasks]
+      summary: Change the status of a task
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - name: status
+          in: query
+          required: true
+          schema: { $ref: '#/components/schemas/Status' }
+      responses:
+        '200':
+          description: The updated task
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /tasks/{id}/priority:
+    patch:
+      tags: [Tasks]
+      summary: Change the priority of a task
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - name: priority
+          in: query
+          required: true
+          schema: { $ref: '#/components/schemas/Priority' }
+      responses:
+        '200':
+          description: The updated task
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /tasks/{id}/category:
+    patch:
+      tags: [Tasks]
+      summary: Change the category of a task
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - name: categoryId
+          in: query
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: The updated task
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: List the categories
+      responses:
+        '200':
+          description: All the categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Category' }
+    post:
+      tags: [Categories]
+      summary: Create a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryInput' }
+      responses:
+        '201':
+          description: The created category
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Category' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /categories/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    put:
+      tags: [Categories]
+      summary: Replace a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryInput' }
+      responses:
+        '200':
+          description: The updated category
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Category' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Categories]
+      summary: Delete a category (its tasks are kept, without category)
+      responses:
+        '204': { description: Deleted }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /statuses:
+    get:
+      tags: [Enums]
+      summary: The task statuses
+      responses:
+        '200':
+          description: Name and label of every status
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/EnumValue' }
+
+  /priorities:
+    get:
+      tags: [Enums]
+      summary: The task priorities
+      responses:
+        '200':
+          description: Name and label of every priority
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/EnumValue' }
+
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer }
+
+  responses:
+    BadRequest:
+      description: Invalid input (blank title or name, unknown enum value, malformed body)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: The task or the category does not exist
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    Status:
+      type: string
+      enum: [TODO, IN_PROGRESS, DONE]
+    Priority:
+      type: string
+      enum: [LOW, MEDIUM, HIGH]
+
+    Task:
+      type: object
+      additionalProperties: false
+      required: [id, title, description, priority, status, categoryId, categoryName, categoryColor]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        description: { type: [string, 'null'] }
+        priority:
+          oneOf:
+            - { $ref: '#/components/schemas/Priority' }
+            - { type: 'null' }
+        status: { $ref: '#/components/schemas/Status' }
+        categoryId: { type: [integer, 'null'] }
+        categoryName: { type: [string, 'null'] }
+        categoryColor: { type: [string, 'null'] }
+
+    TaskCreate:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+        description: { type: [string, 'null'] }
+        priority:
+          oneOf:
+            - { $ref: '#/components/schemas/Priority' }
+            - { type: 'null' }
+        categoryId: { type: [integer, 'null'] }
+
+    TaskUpdate:
+      type: object
+      required: [title, status]
+      properties:
+        title: { type: string }
+        description: { type: [string, 'null'] }
+        status: { $ref: '#/components/schemas/Status' }
+        priority:
+          oneOf:
+            - { $ref: '#/components/schemas/Priority' }
+            - { type: 'null' }
+        categoryId: { type: [integer, 'null'] }
+
+    Category:
+      type: object
+      additionalProperties: false
+      required: [id, name, description, color]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: [string, 'null'] }
+        color: { type: [string, 'null'] }
+
+    CategoryInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string }
+        description: { type: [string, 'null'] }
+        color: { type: [string, 'null'] }
+
+    EnumValue:
+      type: object
+      additionalProperties: false
+      required: [name, label]
+      properties:
+        name: { type: string }
+        label: { type: string }
+
+    Error:
+      type: object
+      additionalProperties: false
+      required: [status, error, message, path]
+      properties:
+        status: { type: integer }
+        error: { type: string }
+        message: { type: string }
+        path: { type: string }

@@ -77,6 +77,7 @@ Writing the C# integration tests against the same contract also exposed real dif
 
 ```text
 task-manager/
+├── api/               # OpenAPI contract shared by the two backends
 ├── frontend/          # Frontend application
 ├── backend-java/      # Java backend
 └── backend-csharp/    # ASP.NET Core backend
@@ -149,7 +150,7 @@ See each project's README for details (tests, migrations, configuration).
 
 ## API contract
 
-Both backends expose the same REST API under `/api`, so the frontend works with either of them.
+Both backends expose the same REST API under `/api`, so the frontend works with either of them. The contract is written down in [`api/openapi.yaml`](./api/openapi.yaml) (OpenAPI 3.1), and each backend is tested against that file (see [Tests](#tests)).
 
 | Method | Path | Description |
 |---|---|---|
@@ -179,6 +180,8 @@ cd backend-csharp && dotnet test TaskTracker.sln  # xUnit, WebApplicationFactory
 
 Both suites check the same contract (see above), which keeps the two backends interchangeable.
 
+**Contract tests**: `OpenApiContractTest` (Java) and `OpenApiContractTests` (C#) run the same scenario through the API and validate **every response** (status code and JSON body) against [`api/openapi.yaml`](./api/openapi.yaml). They also fail if the contract documents a response the scenario never exercises, so the file and the two implementations cannot drift apart. The CI runs them whenever `api/` changes.
+
 ## Continuous integration
 
 GitHub Actions (`.github/workflows/`) runs one workflow per project on every pull request and on pushes to `main`, only when files of that project change:
@@ -199,3 +202,7 @@ Both backends use PostgreSQL 16, each with its own database running in a separat
 
 To reset a database, remove its volume:
 `docker compose down -v` (both) or `docker compose rm -sf postgres-java && docker volume rm task-manager_pgdata_java`.
+
+## License
+
+Released under the [MIT License](./LICENSE).

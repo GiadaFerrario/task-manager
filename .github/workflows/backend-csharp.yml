@@ -3,9 +3,9 @@ name: Backend C#
 on:
   push:
     branches: [main]
-    paths: ['backend-csharp/**', '.github/workflows/backend-csharp.yml']
+    paths: ['backend-csharp/**', 'api/**', '.github/workflows/backend-csharp.yml']
   pull_request:
-    paths: ['backend-csharp/**', '.github/workflows/backend-csharp.yml']
+    paths: ['backend-csharp/**', 'api/**', '.github/workflows/backend-csharp.yml']
 
 permissions:
   contents: read
