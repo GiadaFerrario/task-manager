@@ -123,6 +123,21 @@ class TaskApiIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void updateCategory_withoutDescription_clearsIt() throws Exception {
+        long categoryId = createCategory("Work", "#1976d2");
+        mockMvc.perform(put("/api/categories/{id}", categoryId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Work\",\"description\":\"first\",\"color\":\"#1976d2\"}"))
+                .andExpect(jsonPath("$.description").value("first"));
+
+        mockMvc.perform(put("/api/categories/{id}", categoryId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Work\",\"color\":\"#1976d2\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.description").value((Object) null));
+    }
+
+    @Test
     void unknownTask_returns404WithErrorBody() throws Exception {
         mockMvc.perform(get("/api/tasks/{id}", 999_999))
                 .andExpect(status().isNotFound())

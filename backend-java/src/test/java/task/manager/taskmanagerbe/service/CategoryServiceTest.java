@@ -96,6 +96,16 @@ public class CategoryServiceTest {
     }
 
     @Test
+    public void update_nullDescription_clearsIt() {
+        given(categoryRepository.findById(1L)).willReturn(Optional.of(category));
+        given(categoryRepository.save(any(Category.class))).willAnswer(inv -> inv.getArgument(0));
+
+        CategoryDTO result = categoryService.update(1L, new CategoryDTO(1L, "Updated", null, "#000000"));
+
+        assertThat(result.description()).isNull();
+    }
+
+    @Test
     public void update_notFound_exception() {
         given(categoryRepository.findById(99L)).willReturn(Optional.empty());
         CategoryDTO dto = new CategoryDTO(99L, "DoesNotExist", "Desc", "#FFFFFF");

@@ -50,9 +50,7 @@ public class CategoryService {
         if (dto.name() != null && !dto.name().isBlank()) {
             category.setName(dto.name());
         }
-        if (dto.description() != null) {
-            category.setDescription(dto.description());
-        }
+        category.setDescription(dto.description()); // PUT replaces the description: null clears it
         if (dto.color() != null) {
             category.setColor(dto.color());
         }
