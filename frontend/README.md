@@ -4,10 +4,10 @@ A simple frontend application developed with **React** that interacts with the T
 
 It allows users to:
 - 📋 View, create, update, and delete tasks
-- 🗂️ Organize tasks by category
-- ⚡ Quickly change task status and priority
+- 🗂️ Organize tasks by category, and create, edit and delete categories
+- ⚡ Quickly change task status and priority by clicking the chips on a card
 
-Tasks and categories are created from the **Add Task** / **Add Category** buttons (a dialog form; priority and category are optional, categories get a color from a fixed palette). New tasks always start as *To do*.
+Tasks and categories are created from the **Add Task** / **Add Category** buttons (a dialog form; priority and category are optional, categories get a color from a fixed palette). New tasks always start as *To do*. Clicking a task or a category card opens a dialog to edit it or delete it (deletions ask for confirmation).
 
 ---
 

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from 'storybook/test';
 import ChipList from "../components/chips/ChipList.tsx";
 
 
@@ -17,5 +18,13 @@ export const Default: Story = {
         categoryColor: '#1565c0',
         priority: 'LOW',
         status: 'TODO'
+    },
+};
+
+export const Interactive: Story = {
+    args: {
+        ...Default.args,
+        onStatusChange: fn(),
+        onPriorityChange: fn(),
     },
 };

@@ -3,7 +3,9 @@ import {useSearchParams} from "react-router-dom";
 import {Alert, Box, Button, CircularProgress, Typography} from "@mui/material";
 import type {Task} from "../models/Task.ts";
 import type {Category} from "../models/Category.ts";
-import {getTasks} from "../api/taskService.ts";
+import type {Status} from "../models/Status.ts";
+import type {Priority} from "../models/Priority.ts";
+import {getTasks, updateTaskPriority, updateTaskStatus} from "../api/taskService.ts";
 import {getCategories} from "../api/categoryService.ts";
 import {getErrorMessage} from "../api/getErrorMessage.ts";
 import TaskCard from "../components/cards/TaskCard.tsx";
@@ -38,10 +40,31 @@ export default function TasksPage() {
         closeDialog();
     };
 
-    const handleUpdated = (updated: Task) => {
+    const replaceTask = (updated: Task) =>
         setTasks((current) => current.map((t) => (t.id === updated.id ? updated : t)));
+
+    const handleUpdated = (updated: Task) => {
+        replaceTask(updated);
         setSelectedTask(null);
     };
+
+    const handleDeleted = (id: number) => {
+        setTasks((current) => current.filter((t) => t.id !== id));
+        setSelectedTask(null);
+    };
+
+    // quick changes from the chips of a card: a single-field PATCH instead of a full update
+    const changeField = async (change: () => Promise<Task>) => {
+        try {
+            replaceTask(await change());
+            setError(null);
+        } catch (e) {
+            setError(getErrorMessage(e));
+        }
+    };
+
+    const handleStatusChange = (task: Task, status: Status) => changeField(() => updateTaskStatus(task.id, status));
+    const handlePriorityChange = (task: Task, priority: Priority) => changeField(() => updateTaskPriority(task.id, priority));
 
     return (
         <>
@@ -52,7 +75,14 @@ export default function TasksPage() {
             {error && <Alert severity="error" sx={{mb: 2}}>{error}</Alert>}
             {loading
                 ? <CircularProgress/>
-                : <CustomList items={tasks} renderItem={(task) => <TaskCard task={task} onClick={() => setSelectedTask(task)}/>}/>}
+                : <CustomList items={tasks} renderItem={(task) => (
+                        <TaskCard
+                            task={task}
+                            onClick={() => setSelectedTask(task)}
+                            onStatusChange={(status) => handleStatusChange(task, status)}
+                            onPriorityChange={(priority) => handlePriorityChange(task, priority)}
+                        />
+                    )}/>}
             <TaskFormDialog open={dialogOpen} categories={categories} onClose={closeDialog} onSaved={handleSaved}/>
             {selectedTask && (
                 <TaskDetailDialog
@@ -61,6 +91,7 @@ export default function TasksPage() {
                     categories={categories}
                     onClose={() => setSelectedTask(null)}
                     onSaved={handleUpdated}
+                    onDeleted={handleDeleted}
                 />
             )}
         </>

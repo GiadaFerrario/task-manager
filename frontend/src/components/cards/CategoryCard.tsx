@@ -2,10 +2,11 @@ import { Card, CardContent, Typography, Box } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import type { Category } from "../../models/Category";
 
-export default function CategoryCard(props: { category: Category }) {
+export default function CategoryCard(props: { category: Category; onClick?: () => void }) {
     return (
         <Card
             variant="outlined"
+            onClick={props.onClick}
             sx={{
                 borderRadius: 2,
                 transition: "all 0.25s ease-in-out",

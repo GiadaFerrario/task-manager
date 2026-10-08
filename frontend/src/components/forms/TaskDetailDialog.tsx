@@ -6,24 +6,27 @@ import type {Task} from "../../models/Task.ts";
 import type {Category} from "../../models/Category.ts";
 import {Priority, PRIORITY_LABELS} from "../../models/Priority.ts";
 import {Status, STATUS_LABELS} from "../../models/Status.ts";
-import {updateTask} from "../../api/taskService.ts";
+import {deleteTask, updateTask} from "../../api/taskService.ts";
 import {getErrorMessage} from "../../api/getErrorMessage.ts";
+import ConfirmDialog from "../dialogs/ConfirmDialog.tsx";
 
 type TaskDetailDialogProps = {
     task: Task;
     categories: Category[];
     onClose: () => void;
     onSaved: (task: Task) => void;
+    onDeleted: (id: number) => void;
 };
 
-/** Shows a task and lets the user change its description, status, priority and category. */
-export default function TaskDetailDialog({task, categories, onClose, onSaved}: TaskDetailDialogProps) {
+/** Shows a task and lets the user change its description, status, priority and category, or delete it. */
+export default function TaskDetailDialog({task, categories, onClose, onSaved, onDeleted}: TaskDetailDialogProps) {
     const [description, setDescription] = useState(task.description ?? "");
     const [status, setStatus] = useState<Status>(task.status);
     const [priority, setPriority] = useState<Priority | "">(task.priority ?? "");
     const [categoryId, setCategoryId] = useState<number | "">(task.categoryId ?? "");
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
 
     const changed =
         description.trim() !== (task.description ?? "") ||
@@ -54,6 +57,11 @@ export default function TaskDetailDialog({task, categories, onClose, onSaved}: T
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleDelete = async () => {
+        await deleteTask(task.id);
+        onDeleted(task.id);
     };
 
     return (
@@ -105,12 +113,22 @@ export default function TaskDetailDialog({task, categories, onClose, onSaved}: T
                     </Stack>
                 </DialogContent>
                 <DialogActions>
+                    <Button color="error" onClick={() => setConfirmingDelete(true)} disabled={saving} sx={{mr: "auto"}}>
+                        Delete
+                    </Button>
                     <Button onClick={handleClose} disabled={saving}>Close</Button>
                     <Button type="submit" variant="contained" disabled={saving || !changed}>
                         {saving ? "Saving..." : "Save changes"}
                     </Button>
                 </DialogActions>
             </form>
+            <ConfirmDialog
+                open={confirmingDelete}
+                title="Delete task"
+                message={`Delete "${task.title}"? This cannot be undone.`}
+                onConfirm={handleDelete}
+                onCancel={() => setConfirmingDelete(false)}
+            />
         </Dialog>
     );
 }

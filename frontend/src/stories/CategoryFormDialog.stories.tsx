@@ -17,3 +17,10 @@ export default meta;
 type Story = StoryObj<typeof CategoryFormDialog>;
 
 export const Default: Story = {};
+
+export const Editing: Story = {
+    args: {
+        category: { id: 1, name: 'Work', description: 'Office stuff', color: '#1976d2' },
+        onDeleted: fn(),
+    },
+};

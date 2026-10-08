@@ -12,6 +12,7 @@ export default function CategoriesPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
     const dialogOpen = searchParams.get("new") === "1";
 
@@ -30,6 +31,16 @@ export default function CategoriesPage() {
         closeDialog();
     };
 
+    const handleUpdated = (updated: Category) => {
+        setCategories((current) => current.map((c) => (c.id === updated.id ? updated : c)));
+        setSelectedCategory(null);
+    };
+
+    const handleDeleted = (id: number) => {
+        setCategories((current) => current.filter((c) => c.id !== id));
+        setSelectedCategory(null);
+    };
+
     return (
         <>
             <Box display="flex" alignItems="center" justifyContent="space-between" mb={3} sx={{width: "33vw"}}>
@@ -39,8 +50,18 @@ export default function CategoriesPage() {
             {error && <Alert severity="error" sx={{mb: 2}}>{error}</Alert>}
             {loading
                 ? <CircularProgress/>
-                : <CustomList items={categories} renderItem={(category) => <CategoryCard category={category}/>}/>}
+                : <CustomList items={categories} renderItem={(category) => <CategoryCard category={category} onClick={() => setSelectedCategory(category)}/>}/>}
             <CategoryFormDialog open={dialogOpen} onClose={closeDialog} onSaved={handleSaved}/>
+            {selectedCategory && (
+                <CategoryFormDialog
+                    key={selectedCategory.id}
+                    open
+                    category={selectedCategory}
+                    onClose={() => setSelectedCategory(null)}
+                    onSaved={handleUpdated}
+                    onDeleted={handleDeleted}
+                />
+            )}
         </>
     );
 }

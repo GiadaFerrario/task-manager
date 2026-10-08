@@ -7,9 +7,12 @@ type ColorPickerProps = {
 };
 
 export default function ColorPicker({colors, value, onChange}: ColorPickerProps) {
+    // a category can have a color outside the palette (created through the API): keep it selectable
+    const options = colors.includes(value) ? colors : [value, ...colors];
+
     return (
         <Stack direction="row" spacing={1} role="radiogroup" aria-label="Category color" flexWrap="wrap" useFlexGap>
-            {colors.map((color) => (
+            {options.map((color) => (
                 <Box
                     key={color}
                     component="button"

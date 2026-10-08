@@ -9,6 +9,7 @@ const meta: Meta<typeof TaskDetailDialog> = {
     args: {
         onClose: fn(),
         onSaved: fn(),
+        onDeleted: fn(),
         categories: [
             { id: 1, name: 'Work', color: '#1976d2' },
             { id: 2, name: 'Home', color: '#43a047' },
