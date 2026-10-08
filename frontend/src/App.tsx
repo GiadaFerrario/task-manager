@@ -26,7 +26,7 @@ export default function App() {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <BrowserRouter>
-                <Container sx={{ mt: 4 }}>
+                <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
                     <Layout/>
                 </Container>
             </BrowserRouter>

@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {Chip, Menu, MenuItem, Stack} from '@mui/material';
+import {alpha} from '@mui/material/styles';
 import {Status, STATUS_LABELS} from '../../models/Status';
 import {Priority, PRIORITY_LABELS} from '../../models/Priority';
 
@@ -57,20 +58,21 @@ export default function ChipList({
     };
 
     return (
-        <Stack direction="row" spacing={1.5}>
+        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
             {categoryName && (
                 <Chip
                     label={categoryName}
-                    variant="outlined"
+                    size="small"
                     sx={{
-                        borderColor: categoryColor || 'gray',
-                        color: categoryColor || 'inherit',
+                        backgroundColor: alpha(categoryColor || '#888888', 0.15),
+                        color: categoryColor || 'text.secondary',
                     }}
                 />
             )}
             {priority && (
                 <Chip
                     label={priorityLabel(priority)}
+                    size="small"
                     color={getColor(priority)}
                     variant="outlined"
                     onClick={onPriorityChange ? openMenu('priority') : undefined}
@@ -79,6 +81,7 @@ export default function ChipList({
             {status && (
                 <Chip
                     label={statusLabel(status)}
+                    size="small"
                     color={getColor(status)}
                     variant="filled"
                     onClick={onStatusChange ? openMenu('status') : undefined}

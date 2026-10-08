@@ -1,51 +1,47 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import { alpha } from "@mui/material/styles";
+import LabelOutlinedIcon from "@mui/icons-material/LabelOutlined";
 import type { Category } from "../../models/Category";
 
 export default function CategoryCard(props: { category: Category; onClick?: () => void }) {
+    const color = props.category.color ?? "#7914e3";
     return (
         <Card
-            variant="outlined"
             onClick={props.onClick}
             sx={{
-                borderRadius: 2,
-                transition: "all 0.25s ease-in-out",
+                height: "100%",
+                transition: "transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease",
                 cursor: "pointer",
                 "&:hover": {
-                    backgroundColor: alpha(props.category.color ?? "#000", 0.1),
-                    transform: "translateY(-3px)",
-                    boxShadow: 3,
+                    backgroundColor: alpha(color, 0.08),
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 8px 24px rgba(27, 24, 48, 0.12)",
                 },
             }}
         >
             <CardContent>
-                <Box display="flex" alignItems="center" gap={1}>
-                    {props.category.color &&
-                        <Box
+                <Box display="flex" alignItems="center" gap={1.5}>
+                    <Box
                         sx={{
-                            width: 12,
-                            height: 12,
+                            width: 40,
+                            height: 40,
                             borderRadius: "50%",
-                            backgroundColor: props.category.color,
-                            border: "1px solid rgba(0,0,0,0.4)",
+                            display: "grid",
+                            placeItems: "center",
                             flexShrink: 0,
+                            color,
+                            backgroundColor: alpha(color, 0.15),
                         }}
-                    />}
-                    <Typography
-                        variant="h6"
-                        fontWeight={600}
-                        color="text.primary"
                     >
+                        <LabelOutlinedIcon fontSize="small" />
+                    </Box>
+                    <Typography variant="subtitle1" fontWeight={600} color="text.primary">
                         {props.category.name}
                     </Typography>
                 </Box>
 
                 {props.category.description && (
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mt: 1 }}
-                    >
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
                         {props.category.description}
                     </Typography>
                 )}

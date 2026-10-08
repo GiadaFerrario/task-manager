@@ -1,4 +1,5 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import InboxOutlinedIcon from "@mui/icons-material/InboxOutlined";
 import React from "react";
 
 type CustomListProps<T> = {
@@ -14,21 +15,15 @@ export default function CustomList<T>({
                                        }: CustomListProps<T>) {
     if (!items || items.length === 0) {
         return (
-            <Box
-                sx={{
-                    textAlign: "center",
-                    color: "text.secondary",
-                    py: 3,
-                    fontStyle: "italic",
-                }}
-            >
-                No items to display
+            <Box sx={{textAlign: "center", color: "text.secondary", py: 8}}>
+                <InboxOutlinedIcon sx={{fontSize: 48, opacity: 0.5}} />
+                <Typography variant="body1">No items to display</Typography>
             </Box>
         );
     }
 
     return (
-        <Box display="flex" flexDirection="column" gap={gap} sx={{width: "33vw"}}>
+        <Box sx={{display: "grid", gap, gridTemplateColumns: {xs: "1fr", md: "repeat(2, 1fr)"}}}>
             {items.map((item, index) => (
                 <Box key={index}>{renderItem(item, index)}</Box>
             ))}

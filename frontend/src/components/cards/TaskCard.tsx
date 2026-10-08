@@ -1,7 +1,8 @@
 import type {Task} from "../../models/Task.ts";
 import type {Status} from "../../models/Status.ts";
+import {Status as StatusValue} from "../../models/Status.ts";
 import type {Priority} from "../../models/Priority.ts";
-import {Card, CardContent, Typography} from "@mui/material";
+import {Box, Card, CardContent, Typography} from "@mui/material";
 import ChipList from "../chips/ChipList.tsx";
 
 type TaskCardProps = {
@@ -12,45 +13,66 @@ type TaskCardProps = {
 };
 
 export default function TaskCard(props: TaskCardProps) {
+    const done = props.task.status === StatusValue.DONE;
 
     return (
         <Card
-            variant="outlined"
             onClick={props.onClick}
             sx={{
-                borderRadius: 2,
+                position: "relative",
+                overflow: "hidden",
+                height: "100%",
                 cursor: props.onClick ? "pointer" : "default",
-                transition: "0.2s ease-in-out",
-                "&:hover": {
-                    boxShadow: 2,
-                    transform: "translateY(-1px)",
-                },
+                transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                "&:hover": props.onClick ? {
+                    boxShadow: "0 8px 24px rgba(27, 24, 48, 0.12)",
+                    transform: "translateY(-2px)",
+                } : undefined,
             }}>
-            <CardContent>
+            <Box
+                aria-hidden
+                sx={{
+                    position: "absolute",
+                    inset: "0 auto 0 0",
+                    width: 4,
+                    bgcolor: props.task.categoryColor || "divider",
+                }}
+            />
+            <CardContent sx={{pl: 3, opacity: done ? 0.7 : 1}}>
                 <Typography
-                    variant="h6"
+                    variant="subtitle1"
                     fontWeight={600}
-                    color="text.primary"
+                    color={done ? "text.secondary" : "text.primary"}
+                    sx={{textDecoration: done ? "line-through" : "none"}}
                 >
                     {props.task.title}
                 </Typography>
-                <Typography variant="body2" sx={{marginBottom: "10px"}}>
-                    {props.task.description}
-                </Typography>
-                <ChipList
-                    categoryColor={props.task.categoryColor}
-                    categoryName={props.task.categoryName}
-                    status={props.task.status}
-                    priority={props.task.priority}
-                    onStatusChange={props.onStatusChange}
-                    onPriorityChange={props.onPriorityChange}
-                />
+                {props.task.description && (
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                            mt: 0.5,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                        }}
+                    >
+                        {props.task.description}
+                    </Typography>
+                )}
+                <Box sx={{mt: 1.5}}>
+                    <ChipList
+                        categoryColor={props.task.categoryColor}
+                        categoryName={props.task.categoryName}
+                        status={props.task.status}
+                        priority={props.task.priority}
+                        onStatusChange={props.onStatusChange}
+                        onPriorityChange={props.onPriorityChange}
+                    />
+                </Box>
             </CardContent>
-            {/*<CardActions sx={{ marginTop: "auto" }}>
-                <CardButton size="small" sx={{color: logoGreen}} onClick={() => {
-                    // TODO open a popup
-                }}>More details</CardButton>
-            </CardActions>*/}
         </Card>
     )
 }

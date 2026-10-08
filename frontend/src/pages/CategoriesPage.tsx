@@ -43,7 +43,7 @@ export default function CategoriesPage() {
 
     return (
         <>
-            <Box display="flex" alignItems="center" justifyContent="space-between" mb={3} sx={{width: "33vw"}}>
+            <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
                 <Typography variant="h5">Categories</Typography>
                 <Button variant="contained" onClick={openDialog}>Add Category</Button>
             </Box>
