@@ -41,3 +41,15 @@ Run it locally with:
 
 ```bash
 npm run storybook
+---
+
+### 🧪 Tests
+
+Component tests use **Vitest**, **React Testing Library** and **user-event** (with a jsdom DOM, no browser needed); the API calls are mocked with `vi.mock`.
+
+```bash
+npm test                          # runs every *.test.tsx once
+npx vitest --project unit         # watch mode while developing
+```
+
+Storybook stories can also be run as tests in a real browser (the `storybook` project of `vite.config.ts`).

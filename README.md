@@ -176,9 +176,12 @@ Backend tests run the real application on a throwaway PostgreSQL started by **Te
 ```bash
 cd backend-java && ./mvnw test                    # JUnit 5, Mockito, MockMvc
 cd backend-csharp && dotnet test TaskTracker.sln  # xUnit, WebApplicationFactory
+cd frontend && npm test                           # Vitest, React Testing Library
 ```
 
 Both suites check the same contract (see above), which keeps the two backends interchangeable.
+
+The frontend tests render the components in a simulated DOM and use them like a person would (typing, clicking, picking from menus), with the API calls mocked.
 
 **Contract tests**: `OpenApiContractTest` (Java) and `OpenApiContractTests` (C#) run the same scenario through the API and validate **every response** (status code and JSON body) against [`api/openapi.yaml`](./api/openapi.yaml). They also fail if the contract documents a response the scenario never exercises, so the file and the two implementations cannot drift apart. The CI runs them whenever `api/` changes.
 
@@ -190,7 +193,7 @@ GitHub Actions (`.github/workflows/`) runs one workflow per project on every pul
 |---|---|
 | `backend-java.yml` | JDK 21, `./mvnw verify` (build + all tests, with Testcontainers) |
 | `backend-csharp.yml` | .NET 8, restore, build (Release), `dotnet test` (with Testcontainers) |
-| `frontend.yml` | Node 22, `npm ci`, `npm run lint`, `npm run build` (type check + bundle) |
+| `frontend.yml` | Node 22, `npm ci`, `npm run lint`, `npm test` (Vitest), `npm run build` (type check + bundle) |
 
 ## Databases
 Both backends use PostgreSQL 16, each with its own database running in a separate Docker container.

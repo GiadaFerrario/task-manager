@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-and-build:
+  lint-test-and-build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -30,5 +30,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run lint
+      # Vitest + Testing Library (the "unit" project, no browser needed)
+      - run: npm test
       # tsc -b (type check) + vite build
       - run: npm run build
