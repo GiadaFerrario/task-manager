@@ -39,7 +39,7 @@ Docker must be running: the integration tests use **Testcontainers** to start a 
 ---
 
 ### 🛠️ Tech Stack
-- **Language:** Java 17
+- **Language:** Java 21
 - **Framework:** Spring Boot 3
 - **Database:** PostgreSQL, Flyway migrations
 - **Build Tool:** Maven

@@ -8,19 +8,18 @@ A full-stack task manager: a React single-page app talking to a REST API that is
 
 ## What the app does
 
-- Create **categories** with a name, a description and a color picked from a palette.
+- Create, edit and delete **categories**: a name, a description and a color picked from a palette. Deleting a category keeps its tasks, without a category.
 - Create **tasks** with a title, a description, an optional priority (low / medium / high) and an optional category. New tasks start as *To do*.
-- Open a task to change its description, status (*To do* / *In progress* / *Done*), priority and category.
+- Open a task to change its description, status (*To do* / *In progress* / *Done*), priority and category, or to delete it.
+- Change the status or the priority of a task straight from its card by clicking the chip.
 - See the totals of tasks and categories on the home page, with shortcuts to create new ones.
-
-The backends also support updating and deleting categories, deleting tasks and changing a single field of a task (see the [API contract](#api-contract)); the UI does not use these yet.
 
 ## Tech stack
 
 | Layer | Technologies |
 |---|---|
 | Frontend | React 19, TypeScript, Vite, Material UI, React Router, Axios, Storybook |
-| Backend (Java) | Java 17, Spring Boot 3 (Web, Data JPA, Security, Validation), Flyway, Lombok, Maven |
+| Backend (Java) | Java 21, Spring Boot 3 (Web, Data JPA, Security, Validation), Flyway, Lombok, Maven |
 | Backend (C#) | C# 12, ASP.NET Core 8 (minimal APIs), Entity Framework Core, Npgsql, EF Core migrations |
 | Database | PostgreSQL 16 (one database per backend), Docker Compose |
 | Testing | JUnit 5, Mockito, MockMvc (Java); xUnit, `WebApplicationFactory` (C#); Testcontainers for both |
@@ -109,7 +108,7 @@ This repository consolidates the history of the original frontend and backend re
 
 ## Quick start
 
-The frontend works with either backend (same API contract). Prerequisites: Docker, Node 20+, and JDK 17 (Java backend) or .NET 8 SDK (C# backend).
+The frontend works with either backend (same API contract). Prerequisites: Docker, Node 20+, and JDK 21 (Java backend) or .NET 8 SDK (C# backend).
 
 **1. Database** (from the repo root)
 
@@ -166,7 +165,7 @@ Both backends expose the same REST API under `/api`, so the frontend works with 
 Shared conventions:
 - Enums are `UPPER_SNAKE_CASE` strings: status `TODO` / `IN_PROGRESS` / `DONE`, priority `LOW` / `MEDIUM` / `HIGH`. Priority and category are optional (`null`).
 - A task includes its category as `categoryId`, `categoryName` and `categoryColor`.
-- `PUT /tasks/{id}` replaces the task: a missing priority or category is cleared.
+- `PUT /tasks/{id}` and `PUT /categories/{id}` replace the resource: a missing priority, category or description is cleared.
 - Errors have the same body: `{ "status", "error", "message", "path" }`. Invalid input (blank title or name, unknown enum value) is a `400`; an unknown task or category is a `404`.
 
 ## Tests
@@ -186,7 +185,7 @@ GitHub Actions (`.github/workflows/`) runs one workflow per project on every pul
 
 | Workflow | Steps |
 |---|---|
-| `backend-java.yml` | JDK 17, `./mvnw verify` (build + all tests, with Testcontainers) |
+| `backend-java.yml` | JDK 21, `./mvnw verify` (build + all tests, with Testcontainers) |
 | `backend-csharp.yml` | .NET 8, restore, build (Release), `dotnet test` (with Testcontainers) |
 | `frontend.yml` | Node 22, `npm ci`, `npm run lint`, `npm run build` (type check + bundle) |
 
