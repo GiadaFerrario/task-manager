@@ -2,3 +2,6 @@
 
 # Local environment
 .env
+
+# macOS
+.DS_Store
